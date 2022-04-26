@@ -394,7 +394,7 @@ jobs:
         uses: equisoft-actions/with-asdf-vm@v1
 
       - name: Validate test coverage
-        uses: equisoft-actions/gradle-jacoco-check@v1
+        uses: equisoft-actions/gradle-jacoco-check@78f2d99e602338c0ca662b865e26159485283ead
         with:
           working-directory: ${{ inputs.working-directory }}
           gradle-project-path: ${{ inputs.gradle-subproject }}
