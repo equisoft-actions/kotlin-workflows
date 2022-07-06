@@ -253,7 +253,7 @@ jobs:
         uses: equisoft-actions/with-asdf-vm@v1
 
       - name: Compile source and test code
-        uses: burrunan/gradle-cache-action@v1.10
+        uses: burrunan/gradle-cache-action@v1.11
         with:
           gradle-version: wrapper
           build-root-directory: ${{ inputs.working-directory }}
@@ -289,7 +289,7 @@ jobs:
         uses: equisoft-actions/with-asdf-vm@v1
 
       - name: Run static check analysis
-        uses: burrunan/gradle-cache-action@v1.10
+        uses: burrunan/gradle-cache-action@v1.11
         with:
           gradle-version: wrapper
           build-root-directory: ${{ inputs.working-directory }}
@@ -425,7 +425,7 @@ jobs:
         if: needs.setup.outputs.micronaut-gradle-installed == 'true'
 
       - name: Prepare image context
-        uses: burrunan/gradle-cache-action@v1.10
+        uses: burrunan/gradle-cache-action@v1.11
         if: needs.setup.outputs.micronaut-gradle-installed == 'true'
         with:
           gradle-version: wrapper
