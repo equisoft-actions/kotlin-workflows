@@ -192,7 +192,7 @@ jobs:
             IMAGE_NAME="$FULL_NAME"
           fi
 
-          MICRONAUT_GRADLE_INSTALLED=$(grep -q 'id("io.micronaut.application")\|id("com.equisoft.standards.micronaut")' "$SUBPROJECT_DIR/build.gradle.kts" 2>&1; echo $?)
+          MICRONAUT_GRADLE_INSTALLED=$(grep -s -q 'id("io.micronaut.application")\|id("com.equisoft.standards.micronaut")\|id = "com.equisoft.standards.micronaut"' "$SUBPROJECT_DIR/build.gradle.kts" "${{ inputs.working-directory }}/gradle/libs.versions.toml" 2>&1; echo $?)
           BUILD_IMAGE_RUNNER="ubuntu-latest"
           USE_EMULATION="true"
 
@@ -257,7 +257,9 @@ jobs:
         with:
           gradle-version: wrapper
           build-root-directory: ${{ inputs.working-directory }}
-          gradle-dependencies-cache-key: buildSrc/**/Dependencies.kt
+          gradle-dependencies-cache-key: |
+            buildSrc/**/Dependencies.kt
+            gradle/libs.versions.toml
           arguments: -p ${{ inputs.gradle-subproject }} ci-classes
           concurrent: true
           gradle-distribution-sha-256-sum-warning: false
@@ -293,7 +295,9 @@ jobs:
         with:
           gradle-version: wrapper
           build-root-directory: ${{ inputs.working-directory }}
-          gradle-dependencies-cache-key: buildSrc/**/Dependencies.kt
+          gradle-dependencies-cache-key: |
+            buildSrc/**/Dependencies.kt
+            gradle/libs.versions.toml
           arguments: -p ${{ inputs.gradle-subproject }} ci-check
           concurrent: true
           gradle-distribution-sha-256-sum-warning: false
@@ -430,7 +434,9 @@ jobs:
         with:
           gradle-version: wrapper
           build-root-directory: ${{ inputs.working-directory }}
-          gradle-dependencies-cache-key: buildSrc/**/Dependencies.kt
+          gradle-dependencies-cache-key: |
+            buildSrc/**/Dependencies.kt
+            gradle/libs.versions.toml
           arguments: -p ${{ inputs.gradle-subproject }} buildLayers buildNativeLayersTask dockerPrepareContext dockerfile
           concurrent: true
           gradle-distribution-sha-256-sum-warning: false
