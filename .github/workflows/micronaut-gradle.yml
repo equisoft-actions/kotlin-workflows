@@ -427,6 +427,7 @@ jobs:
       lambda-artifact: ${{ steps.extract-lambda.outputs.filename }}
     needs: [setup, lint_dockerfiles, static_analysis, test_coverage_verification]
     if: |
+      needs.setup.outputs.publishable == 'true' &&
       !failure() &&
       !cancelled() &&
       (!(contains(inputs.checks, 'unit_tests') && contains(inputs.checks, 'e2e_tests')) || success('test_coverage_verification')) &&
