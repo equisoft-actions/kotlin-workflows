@@ -80,6 +80,14 @@ on:
         required: false
         default: false
         type: boolean
+      publish-openapi-sdk-for-hotfix:
+        description: |
+          `true` to publish built SDKs when the deployment is a hotfix. `publish-openapi-sdk` must also be true.
+
+          Defaults to false.
+        required: false
+        default: false
+        type: boolean
       workflow-path:
         description: "Workflow file path allowing changes detection"
         default: ".github/workflows/micronaut-gradle.yml"
@@ -164,6 +172,7 @@ jobs:
       use-emulation: ${{ steps.build-metadata.outputs.use-emulation }}
       build-image-runner: ${{ steps.build-metadata.outputs.build-image-runner }}
       publishable: ${{ steps.metadata.outputs.publishable }}
+      is-hotfix: ${{ steps.metadata.outputs.is-hotfix }}
       sdk-generators-matrix: ${{ steps.build-metadata.outputs.sdk-generators-matrix }}
       version: ${{ steps.metadata.outputs.version }}
 
@@ -179,6 +188,8 @@ jobs:
       - name: Application metadata
         id: metadata
         uses: equisoft-actions/application-metadata@v1
+        with:
+          hotfix-branch-prefix: release/
 
       - name: Setup asdf-vm
         uses: equisoft-actions/with-asdf-vm@v1
@@ -548,7 +559,7 @@ jobs:
           gradle-project-path: ${{ inputs.gradle-subproject }}
           generator-name: ${{ matrix.generator }}
           is-release: ${{ needs.setup.outputs.is-release }}
-          publish: ${{ inputs.publish-openapi-sdk && needs.setup.outputs.publishable == 'true' }}
+          publish: ${{ inputs.publish-openapi-sdk && needs.setup.outputs.publishable == 'true'  && (needs.setup.outputs.is-hotfix != 'true' || inputs.publish-openapi-sdk-for-hotfix ) }}
           publish-pat: ${{ secrets.GPR_KEY }}
           gradle-properties: |
             application.version=${{ needs.setup.outputs.version }}
