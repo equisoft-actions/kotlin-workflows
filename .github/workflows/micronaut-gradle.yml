@@ -522,6 +522,20 @@ jobs:
           path: ${{ steps.extract-lambda.outputs.filename }}
           retention-days: 1
 
+  docker-security:
+    uses: equisoft-actions/docker-workflows/.github/workflows/security.yml@v2
+    if: inputs.publish-image
+    needs:
+      - image
+    with:
+      image-tag: ${{ needs.image.outputs.image-tag }}
+      working-directory: ${{ inputs.working-directory }}
+    secrets:
+      REGISTRY: ${{ secrets.ECR_REGISTRY }}
+      ECR_AWS_ACCESS_KEY_ID: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
+      ECR_AWS_SECRET_ACCESS_KEY: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
+      ECR_AWS_REGION: ${{ secrets.ECR_AWS_REGION }}
+
   generate_sdk:
     strategy:
       matrix:
