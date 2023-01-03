@@ -248,20 +248,20 @@ jobs:
           fi
           OPENAPI_FILE="$OPENAPI_FILE_PREFIX-$VERSION.yml"
 
-          echo "image-name={IMAGE_NAME}" >> $GITHUB_OUTPUT
-          echo "docker-context={DOCKER_CONTEXT}" >> $GITHUB_OUTPUT
-          echo "dockerfile={DOCKERFILE}" >> $GITHUB_OUTPUT
-          echo "subproject-dir={SUBPROJECT_DIR}" >> $GITHUB_OUTPUT
-          echo "micronaut-gradle-installed=( [ "$MICRONAUT_GRADLE_INSTALLED" = 0 ] && echo true || echo false )" >> $GITHUB_OUTPUT
-          echo "openapi-file={OPENAPI_FILE}" >> $GITHUB_OUTPUT
-          echo "build-image-runner={BUILD_IMAGE_RUNNER}" >> $GITHUB_OUTPUT
-          echo "use-emulation={USE_EMULATION}" >> $GITHUB_OUTPUT
+          echo "image-name=${IMAGE_NAME}" >> $GITHUB_OUTPUT
+          echo "docker-context=${DOCKER_CONTEXT}" >> $GITHUB_OUTPUT
+          echo "dockerfile=${DOCKERFILE}" >> $GITHUB_OUTPUT
+          echo "subproject-dir=${SUBPROJECT_DIR}" >> $GITHUB_OUTPUT
+          echo "micronaut-gradle-installed=$( [ "$MICRONAUT_GRADLE_INSTALLED" = 0 ] && echo true || echo false )" >> $GITHUB_OUTPUT
+          echo "openapi-file=${OPENAPI_FILE}" >> $GITHUB_OUTPUT
+          echo "build-image-runner=${BUILD_IMAGE_RUNNER}" >> $GITHUB_OUTPUT
+          echo "use-emulation=${USE_EMULATION}" >> $GITHUB_OUTPUT
 
           sdk_generators_input="${{ inputs.enable-openapi-sdk }}"
           sdk_generators_input="${sdk_generators_input//,/$'\n'}"
           sdk_generators=(${sdk_generators_input//,/ })
           sdk_generators_json=$(jq --compact-output --null-input '$ARGS.positional' --args "${sdk_generators[@]}")
-          echo "sdk-generators-matrix=sdk_generators_json" >> $GITHUB_OUTPUT
+          echo "sdk-generators-matrix=$sdk_generators_json" >> $GITHUB_OUTPUT
 
   compile:
     name: Compile
@@ -498,7 +498,7 @@ jobs:
         if: inputs.publish-image && !inputs.lambda-build
         shell: bash
         run: |
-          echo "image-tag={{ needs.setup.outputs.image-name }}:${{ steps.build-and-push.outputs.image-version }}" >> $GITHUB_OUTPUT
+          echo "image-tag=${{ needs.setup.outputs.image-name }}:${{ steps.build-and-push.outputs.image-version }}" >> $GITHUB_OUTPUT
 
       - name: Extract lambda from image
         id: extract-lambda
@@ -512,7 +512,7 @@ jobs:
           docker cp "$container_id:/function/function.zip" "$filename"
           docker rm -v "$container_id"
 
-          echo "filename=filename" >> $GITHUB_OUTPUT
+          echo "filename=$filename" >> $GITHUB_OUTPUT
 
       - name: Upload lambda artifact
         uses: actions/upload-artifact@v3
