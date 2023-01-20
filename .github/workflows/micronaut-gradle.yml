@@ -524,7 +524,11 @@ jobs:
 
   docker-security:
     uses: equisoft-actions/docker-workflows/.github/workflows/security.yml@v2
-    if: inputs.publish-image
+    if: |
+      inputs.publish-image &&
+      success('image') &&
+      !failure() &&
+      !cancelled()
     needs:
       - image
     with:
