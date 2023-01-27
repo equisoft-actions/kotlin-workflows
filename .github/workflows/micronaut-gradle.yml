@@ -98,6 +98,11 @@ on:
         default: '.'
         required: false
         type: string
+      enable-test-coverage-comment:
+        description: Post coverage results as a comment on the Pull Request. Defaults to `true`.
+        required: true
+        default: true
+        type: boolean
     secrets:
       GPR_USER:
         description: A username with write access to Github Package registry.
@@ -414,6 +419,7 @@ jobs:
             application.version=${{ needs.setup.outputs.version }}
             gpr.user=${{ secrets.GPR_USER }}
             gpr.key=${{ secrets.GPR_KEY }}
+          enable-coverage-comment: ${{ inputs.enable-test-coverage-comment }}
 
   lint_dockerfiles:
     name: Lint Dockerfiles
