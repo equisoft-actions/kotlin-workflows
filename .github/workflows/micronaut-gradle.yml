@@ -100,7 +100,7 @@ on:
         type: string
       enable-test-coverage-comment:
         description: Post coverage results as a comment on the Pull Request. Defaults to `true`.
-        required: true
+        required: false
         default: true
         type: boolean
     secrets:
