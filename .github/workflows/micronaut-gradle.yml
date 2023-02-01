@@ -107,6 +107,7 @@ on:
         description: 'A JSON-array with triggers that should never be skipped'
         required: false
         default: '["workflow_dispatch", "schedule","push"]'
+        type: string
     secrets:
       GPR_USER:
         description: A username with write access to Github Package registry.
