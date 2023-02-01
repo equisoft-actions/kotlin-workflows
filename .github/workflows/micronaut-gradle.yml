@@ -103,6 +103,11 @@ on:
         required: false
         default: true
         type: boolean
+      skip-duplicate-do-not-skip:
+        default: '["push", "schedule", "workflow_dispatch"]'
+        description: 'A JSON-Array of events that requires all checks to be run'
+        required: false
+        type: string
     secrets:
       GPR_USER:
         description: A username with write access to Github Package registry.
@@ -147,12 +152,7 @@ jobs:
         uses: fkirc/skip-duplicate-actions@v5
         with:
           concurrent_skipping: same_content
-          do_not_skip: >-
-            [
-              "push",
-              "schedule",
-              "workflow_dispatch"
-            ]
+          do_not_skip: ${{ inputs.skip-duplicate-do-not-skip }}
           paths: >-
             [
               "${{ inputs.workflow-path }}",
