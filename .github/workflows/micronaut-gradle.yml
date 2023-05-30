@@ -359,7 +359,7 @@ jobs:
         uses: equisoft-actions/with-asdf-vm@v1
 
       - name: Run unit tests
-        uses: equisoft-actions/gradle-junit@9a044033a0a3c2532d95e69071747b10b438c785
+        uses: equisoft-actions/gradle-junit@v1
         with:
           working-directory: ${{ inputs.working-directory }}
           gradle-project-path: ${{ inputs.gradle-subproject }}
@@ -383,7 +383,7 @@ jobs:
         uses: equisoft-actions/with-asdf-vm@v1
 
       - name: Run e2e tests
-        uses: equisoft-actions/gradle-junit@9a044033a0a3c2532d95e69071747b10b438c785
+        uses: equisoft-actions/gradle-junit@v1
         with:
           working-directory: ${{ inputs.working-directory }}
           gradle-project-path: ${{ inputs.gradle-subproject }}
