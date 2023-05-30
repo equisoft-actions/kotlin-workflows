@@ -10,14 +10,14 @@ on:
       checks:
         description: |
           List of enabled check separated by comma.
-          default: static_analysis,unit_tests,lint_dockerfiles
+          default: static_analysis,unit_tests
           available checks: static_analysis,unit_tests,e2e_tests
         required: false
         default: "static_analysis,unit_tests"
         type: string
       workflow-path:
         description: "Workflow file path allowing changes detection"
-        default: ".github/workflows/micronaut-gradle.yml"
+        default: ".github/workflows/micronaut-gradle-library.yml"
         required: false
         type: string
       working-directory:
