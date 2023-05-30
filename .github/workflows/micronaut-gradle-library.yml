@@ -158,6 +158,7 @@ jobs:
             application.version=${{ needs.setup.outputs.version }}
             gpr.user=${{ secrets.GPR_USER }}
             gpr.key=${{ secrets.GPR_KEY }}
+          execution-only-caches: true
 
       - name: Upload results
         uses: actions/upload-artifact@v3
@@ -194,7 +195,7 @@ jobs:
           execution-only-caches: true
 
       - name: Validate test coverage
-        uses: equisoft-actions/gradle-jacoco-check@63b7610108defc8587d25bcfe5eba5f83e5b8d5e
+        uses: equisoft-actions/gradle-jacoco-check@7c59c2f408e39f07f3cd585d3913a918d77799cf
         if: (contains(inputs.checks, 'unit_tests') || contains(inputs.checks, 'e2e_tests'))
         with:
           working-directory: ${{ inputs.working-directory }}
