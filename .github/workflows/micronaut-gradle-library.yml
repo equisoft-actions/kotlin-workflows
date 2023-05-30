@@ -166,8 +166,8 @@ jobs:
         with:
           name: static-check-reports
           path: |
-            ./build/reports/detekt
-            ./build/reports/ktlint
+            ${{ inputs.working-directory }}/**/build/reports/detekt
+            ${{ inputs.working-directory }}/**/build/reports/ktlint
           retention-days: 5
 
       - name: Run unit tests
@@ -195,7 +195,7 @@ jobs:
           execution-only-caches: true
 
       - name: Validate test coverage
-        uses: equisoft-actions/gradle-jacoco-check@7c59c2f408e39f07f3cd585d3913a918d77799cf
+        uses: equisoft-actions/gradle-jacoco-check@05a0af38a1a43c3258902c28eeeec96688b916a4
         if: (contains(inputs.checks, 'unit_tests') || contains(inputs.checks, 'e2e_tests'))
         with:
           working-directory: ${{ inputs.working-directory }}
