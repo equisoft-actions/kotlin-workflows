@@ -195,7 +195,7 @@ jobs:
           execution-only-caches: true
 
       - name: Validate test coverage
-        uses: equisoft-actions/gradle-jacoco-check@694ad905b31b291c6c94b5e4140f64046d101ca1
+        uses: equisoft-actions/gradle-jacoco-check@e98638aa33136136e837a23380bc0d3abac71e93
         if: (contains(inputs.checks, 'unit_tests') || contains(inputs.checks, 'e2e_tests'))
         with:
           working-directory: ${{ inputs.working-directory }}
