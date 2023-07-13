@@ -221,7 +221,7 @@ jobs:
             IMAGE_NAME="$FULL_NAME"
           fi
 
-          MICRONAUT_GRADLE_INSTALLED=$(grep -s -q 'id("io.micronaut.application")\|id("com.equisoft.standards.micronaut")\|id = "com.equisoft.standards.micronaut"' "$SUBPROJECT_DIR/build.gradle.kts" "${{ inputs.working-directory }}/gradle/libs.versions.toml" 2>&1; echo $?)
+          MICRONAUT_GRADLE_INSTALLED=$(grep -s -q 'id("io.micronaut.application")\|id("com.equisoft.standards.micronaut")\|id = "com.equisoft.standards.micronaut"\|id = "com.equisoft.standards.gradle.micronaut"' "$SUBPROJECT_DIR/build.gradle.kts" "${{ inputs.working-directory }}/gradle/libs.versions.toml" 2>&1; echo $?)
           BUILD_IMAGE_RUNNER="ubuntu-latest"
           USE_EMULATION="true"
 
