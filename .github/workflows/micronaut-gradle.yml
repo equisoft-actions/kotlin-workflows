@@ -197,7 +197,7 @@ jobs:
           hotfix-branch-prefix: release/
 
       - name: Setup asdf-vm
-        uses: equisoft-actions/with-asdf-vm@v1
+        uses: equisoft-actions/with-asdf-vm@v2
 
       - name: Build metadata
         id: build-metadata
@@ -279,7 +279,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup asdf-vm
-        uses: equisoft-actions/with-asdf-vm@v1
+        uses: equisoft-actions/with-asdf-vm@v2
 
       - name: Compile source and test code
         uses: burrunan/gradle-cache-action@v1
@@ -317,7 +317,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup asdf-vm
-        uses: equisoft-actions/with-asdf-vm@v1
+        uses: equisoft-actions/with-asdf-vm@v2
 
       - name: Run static check analysis
         uses: burrunan/gradle-cache-action@v1
@@ -356,7 +356,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup asdf-vm
-        uses: equisoft-actions/with-asdf-vm@v1
+        uses: equisoft-actions/with-asdf-vm@v2
 
       - name: Run unit tests
         uses: equisoft-actions/gradle-junit@v1
@@ -380,7 +380,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup asdf-vm
-        uses: equisoft-actions/with-asdf-vm@v1
+        uses: equisoft-actions/with-asdf-vm@v2
 
       - name: Run e2e tests
         uses: equisoft-actions/gradle-junit@v1
@@ -408,7 +408,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup asdf-vm
-        uses: equisoft-actions/with-asdf-vm@v1
+        uses: equisoft-actions/with-asdf-vm@v2
 
       - name: Validate test coverage
         uses: equisoft-actions/gradle-jacoco-check@v1
@@ -456,7 +456,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup asdf-vm
-        uses: equisoft-actions/with-asdf-vm@v1
+        uses: equisoft-actions/with-asdf-vm@v2
         if: needs.setup.outputs.micronaut-gradle-installed == 'true'
 
       - name: Prepare image context
@@ -568,7 +568,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup asdf-vm
-        uses: equisoft-actions/with-asdf-vm@v1
+        uses: equisoft-actions/with-asdf-vm@v2
 
       - name: Setup PHP  # TODO: Change the project setup to do that. Maybe put it into actions/with-asdf-vm?
         uses: shivammathur/setup-php@v2
