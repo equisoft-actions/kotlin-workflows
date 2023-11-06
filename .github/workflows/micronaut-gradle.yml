@@ -281,21 +281,17 @@ jobs:
       - name: Setup asdf-vm
         uses: equisoft-actions/with-asdf-vm@v2
 
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+
       - name: Compile source and test code
-        uses: burrunan/gradle-cache-action@v1
-        with:
-          gradle-version: wrapper
-          build-root-directory: ${{ inputs.working-directory }}
-          gradle-dependencies-cache-key: |
-            buildSrc/**/Dependencies.kt
-            gradle/libs.versions.toml
-          arguments: -p ${{ inputs.gradle-subproject }} ci-classes
-          concurrent: true
-          gradle-distribution-sha-256-sum-warning: false
-          properties: |
-            application.version=${{ needs.setup.outputs.version }}
-            gpr.user=${{ secrets.GPR_USER }}
-            gpr.key=${{ secrets.GPR_KEY }}
+        shell: bash
+        working-directory: ${{ inputs.working-directory }}
+        run: |
+          ./gradlew -p ${{ inputs.gradle-subproject }} ci-classes \
+            -Papplication.version=${{ needs.setup.outputs.version }} \
+            -Pgpr.user=${{ secrets.GPR_USER }} \
+            -Pgpr.key=${{ secrets.GPR_KEY }}
 
       - name: Upload OpenAPI spec
         uses: actions/upload-artifact@v3
@@ -319,21 +315,17 @@ jobs:
       - name: Setup asdf-vm
         uses: equisoft-actions/with-asdf-vm@v2
 
-      - name: Run static check analysis
-        uses: burrunan/gradle-cache-action@v1
-        with:
-          gradle-version: wrapper
-          build-root-directory: ${{ inputs.working-directory }}
-          gradle-dependencies-cache-key: |
-            buildSrc/**/Dependencies.kt
-            gradle/libs.versions.toml
-          arguments: -p ${{ inputs.gradle-subproject }} ci-check
-          concurrent: true
-          gradle-distribution-sha-256-sum-warning: false
-          properties: |
-            application.version=${{ needs.setup.outputs.version }}
-            gpr.user=${{ secrets.GPR_USER }}
-            gpr.key=${{ secrets.GPR_KEY }}
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+
+      - name:  Run static check analysis
+        shell: bash
+        working-directory: ${{ inputs.working-directory }}
+        run: |
+          ./gradlew -p ${{ inputs.gradle-subproject }} ci-check \
+            -Papplication.version=${{ needs.setup.outputs.version }} \
+            -Pgpr.user=${{ secrets.GPR_USER }} \
+            -Pgpr.key=${{ secrets.GPR_KEY }}
 
       - name: Upload results
         uses: actions/upload-artifact@v3
@@ -359,7 +351,7 @@ jobs:
         uses: equisoft-actions/with-asdf-vm@v2
 
       - name: Run unit tests
-        uses: equisoft-actions/gradle-junit@v1
+        uses: equisoft-actions/gradle-junit@v2
         with:
           working-directory: ${{ inputs.working-directory }}
           gradle-project-path: ${{ inputs.gradle-subproject }}
@@ -383,7 +375,7 @@ jobs:
         uses: equisoft-actions/with-asdf-vm@v2
 
       - name: Run e2e tests
-        uses: equisoft-actions/gradle-junit@v1
+        uses: equisoft-actions/gradle-junit@v2
         with:
           working-directory: ${{ inputs.working-directory }}
           gradle-project-path: ${{ inputs.gradle-subproject }}
@@ -411,7 +403,7 @@ jobs:
         uses: equisoft-actions/with-asdf-vm@v2
 
       - name: Validate test coverage
-        uses: equisoft-actions/gradle-jacoco-check@v1
+        uses: equisoft-actions/gradle-jacoco-check@v2
         with:
           working-directory: ${{ inputs.working-directory }}
           gradle-project-path: ${{ inputs.gradle-subproject }}
@@ -459,22 +451,17 @@ jobs:
         uses: equisoft-actions/with-asdf-vm@v2
         if: needs.setup.outputs.micronaut-gradle-installed == 'true'
 
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+
       - name: Prepare image context
-        uses: burrunan/gradle-cache-action@v1
-        if: needs.setup.outputs.micronaut-gradle-installed == 'true'
-        with:
-          gradle-version: wrapper
-          build-root-directory: ${{ inputs.working-directory }}
-          gradle-dependencies-cache-key: |
-            buildSrc/**/Dependencies.kt
-            gradle/libs.versions.toml
-          arguments: -p ${{ inputs.gradle-subproject }} ${{ inputs.native-build && 'buildNativeLayersTask dockerfileNative' || 'buildLayers dockerfile' }} dockerPrepareContext
-          concurrent: true
-          gradle-distribution-sha-256-sum-warning: false
-          properties: |
-            application.version=${{ needs.setup.outputs.version }}
-            gpr.user=${{ secrets.GPR_USER }}
-            gpr.key=${{ secrets.GPR_KEY }}
+        shell: bash
+        working-directory: ${{ inputs.working-directory }}
+        run: |
+          ./gradlew -p ${{ inputs.gradle-subproject }} ${{ inputs.native-build && 'buildNativeLayersTask dockerfileNative' || 'buildLayers dockerfile' }} dockerPrepareContext \
+            -Papplication.version=${{ needs.setup.outputs.version }} \
+            -Pgpr.user=${{ secrets.GPR_USER }} \
+            -Pgpr.key=${{ secrets.GPR_KEY }}
 
       - name: Build and push
         id: build-and-push
@@ -577,7 +564,7 @@ jobs:
           php-version: "7.4"
 
       - name: Generate SDK
-        uses: equisoft-actions/generate-openapi-sdk@v1
+        uses: equisoft-actions/generate-openapi-sdk@v2
         with:
           working-directory: ${{ inputs.working-directory }}
           gradle-project-path: ${{ inputs.gradle-subproject }}
