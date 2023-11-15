@@ -126,39 +126,27 @@ jobs:
       - name: Setup asdf-vm
         uses: equisoft-actions/with-asdf-vm@v2
 
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+
       - name: Compile source and test code
-        uses: burrunan/gradle-cache-action@v1
-        with:
-          gradle-version: wrapper
-          build-root-directory: ${{ inputs.working-directory }}
-          gradle-dependencies-cache-key: |
-            buildSrc/**/Dependencies.kt
-            gradle/libs.versions.toml
-          arguments: ci-classes
-          concurrent: true
-          gradle-distribution-sha-256-sum-warning: false
-          properties: |
-            application.version=${{ needs.setup.outputs.version }}
-            gpr.user=${{ secrets.GPR_USER }}
-            gpr.key=${{ secrets.GPR_KEY }}
+        shell: bash
+        working-directory: ${{ inputs.working-directory }}
+        run: |
+          ./gradlew -p ${{ inputs.gradle-subproject }} ci-classes \
+            -Papplication.version=${{ needs.setup.outputs.version }} \
+            -Pgpr.user=${{ secrets.GPR_USER }} \
+            -Pgpr.key=${{ secrets.GPR_KEY }}
 
       - name: Run static check analysis
-        uses: burrunan/gradle-cache-action@v1
         if: contains(inputs.checks, 'static_analysis')
-        with:
-          gradle-version: wrapper
-          build-root-directory: ${{ inputs.working-directory }}
-          gradle-dependencies-cache-key: |
-            buildSrc/**/Dependencies.kt
-            gradle/libs.versions.toml
-          arguments: ci-check
-          concurrent: true
-          gradle-distribution-sha-256-sum-warning: false
-          properties: |
-            application.version=${{ needs.setup.outputs.version }}
-            gpr.user=${{ secrets.GPR_USER }}
-            gpr.key=${{ secrets.GPR_KEY }}
-          execution-only-caches: true
+        shell: bash
+        working-directory: ${{ inputs.working-directory }}
+        run: |
+          ./gradlew -p ${{ inputs.gradle-subproject }} ci-check \
+            -Papplication.version=${{ needs.setup.outputs.version }} \
+            -Pgpr.user=${{ secrets.GPR_USER }} \
+            -Pgpr.key=${{ secrets.GPR_KEY }}
 
       - name: Upload results
         uses: actions/upload-artifact@v3
@@ -171,7 +159,7 @@ jobs:
           retention-days: 5
 
       - name: Run unit tests
-        uses: equisoft-actions/gradle-junit@v1
+        uses: equisoft-actions/gradle-junit@v2
         if: contains(inputs.checks, 'unit_tests')
         with:
           working-directory: ${{ inputs.working-directory }}
@@ -180,10 +168,9 @@ jobs:
             application.version=${{ needs.setup.outputs.version }}
             gpr.user=${{ secrets.GPR_USER }}
             gpr.key=${{ secrets.GPR_KEY }}
-          execution-only-caches: true
 
       - name: Run e2e tests
-        uses: equisoft-actions/gradle-junit@v1
+        uses: equisoft-actions/gradle-junit@v2
         if: contains(inputs.checks, 'e2e_tests')
         with:
           working-directory: ${{ inputs.working-directory }}
@@ -192,10 +179,9 @@ jobs:
             application.version=${{ needs.setup.outputs.version }}
             gpr.user=${{ secrets.GPR_USER }}
             gpr.key=${{ secrets.GPR_KEY }}
-          execution-only-caches: true
 
       - name: Validate test coverage
-        uses: equisoft-actions/gradle-jacoco-check@v1
+        uses: equisoft-actions/gradle-jacoco-check@v2
         if: (contains(inputs.checks, 'unit_tests') || contains(inputs.checks, 'e2e_tests'))
         with:
           working-directory: ${{ inputs.working-directory }}
@@ -205,7 +191,6 @@ jobs:
             gpr.key=${{ secrets.GPR_KEY }}
           enable-coverage-comment: ${{ inputs.enable-test-coverage-comment }}
           download-artifact: false
-          execution-only-caches: true
 
   publish:
     name: Publish
@@ -222,19 +207,19 @@ jobs:
       - name: Setup asdf-vm
         uses: equisoft-actions/with-asdf-vm@v2
 
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+
       - name: Publish
-        uses: burrunan/gradle-cache-action@v1
-        with:
-          working-directory: ${{ inputs.working-directory }}
-          gradle-version: wrapper
-          arguments: publish
-          gradle-distribution-sha-256-sum-warning: false
-          properties: |
-            application.version=${{ needs.setup.outputs.version }}
-            gpr.user=${{ secrets.GPR_USER }}
-            gpr.key=${{ secrets.GPR_KEY }}
-            gpr.write.user=${{ secrets.GPR_USER }}
-            gpr.write.key=${{ secrets.GPR_KEY }}
+        shell: bash
+        working-directory: ${{ inputs.working-directory }}
+        run: |
+          ./gradlew -p ${{ inputs.gradle-subproject }} ci-classes \
+            -Papplication.version=${{ needs.setup.outputs.version }} \
+            -Pgpr.user=${{ secrets.GPR_USER }} \
+            -Pgpr.key=${{ secrets.GPR_KEY }} \
+            -Pgpr.write.user=${{ secrets.GPR_USER }} \
+            -Pgpr.write.key=${{ secrets.GPR_KEY }}
 
   notify:
     name: Notify
