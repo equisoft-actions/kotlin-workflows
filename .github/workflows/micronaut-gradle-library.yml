@@ -117,7 +117,7 @@ jobs:
     name: Compile
     runs-on: ubuntu-latest
     needs:
-     - setup
+      - setup
 
     steps:
       - name: Checkout
@@ -133,7 +133,7 @@ jobs:
         shell: bash
         working-directory: ${{ inputs.working-directory }}
         run: |
-          ./gradlew -p ${{ inputs.gradle-subproject }} ci-classes \
+          ./gradlew ci-classes \
             -Papplication.version=${{ needs.setup.outputs.version }} \
             -Pgpr.user=${{ secrets.GPR_USER }} \
             -Pgpr.key=${{ secrets.GPR_KEY }}
@@ -143,7 +143,7 @@ jobs:
         shell: bash
         working-directory: ${{ inputs.working-directory }}
         run: |
-          ./gradlew -p ${{ inputs.gradle-subproject }} ci-check \
+          ./gradlew ci-check \
             -Papplication.version=${{ needs.setup.outputs.version }} \
             -Pgpr.user=${{ secrets.GPR_USER }} \
             -Pgpr.key=${{ secrets.GPR_KEY }}
@@ -214,7 +214,7 @@ jobs:
         shell: bash
         working-directory: ${{ inputs.working-directory }}
         run: |
-          ./gradlew -p ${{ inputs.gradle-subproject }} ci-classes \
+          ./gradlew publish \
             -Papplication.version=${{ needs.setup.outputs.version }} \
             -Pgpr.user=${{ secrets.GPR_USER }} \
             -Pgpr.key=${{ secrets.GPR_KEY }} \
