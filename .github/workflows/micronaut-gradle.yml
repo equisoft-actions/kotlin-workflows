@@ -294,7 +294,7 @@ jobs:
             -Pgpr.key=${{ secrets.GPR_KEY }}
 
       - name: Upload OpenAPI spec
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: success() && inputs.enable-openapi
         with:
           name: openapi-${{ needs.setup.outputs.openapi-file }}
@@ -328,7 +328,7 @@ jobs:
             -Pgpr.key=${{ secrets.GPR_KEY }}
 
       - name: Upload results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: success() || failure()
         with:
           name: static-check-reports
@@ -508,7 +508,7 @@ jobs:
           echo "filename=$filename" >> $GITHUB_OUTPUT
 
       - name: Upload lambda artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: inputs.lambda-build
         with:
           name: ${{ steps.extract-lambda.outputs.filename }}
