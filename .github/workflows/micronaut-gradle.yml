@@ -298,7 +298,9 @@ jobs:
         if: success() && inputs.enable-openapi
         with:
           name: openapi-${{ needs.setup.outputs.openapi-file }}
-          path: ${{ needs.setup.outputs.subproject-dir }}/build/tmp/kapt3/classes/main/META-INF/swagger/${{ needs.setup.outputs.openapi-file }}
+          path: |
+            ${{ needs.setup.outputs.subproject-dir }}/build/tmp/kapt3/classes/main/META-INF/swagger/${{ needs.setup.outputs.openapi-file }}
+            ${{ needs.setup.outputs.subproject-dir }}/build/generated/ksp/main/resources/META-INF/swagger/${{ needs.setup.outputs.openapi-file }}
           retention-days: 5
           if-no-files-found: error
 
