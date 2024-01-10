@@ -438,6 +438,7 @@ jobs:
       lambda-artifact: ${{ steps.extract-lambda.outputs.filename }}
     needs: [setup, lint_dockerfiles, static_analysis, test_coverage_verification]
     if: |
+      needs.setup.outputs.publishable == 'true' &&
       !failure() &&
       !cancelled() &&
       (!(contains(inputs.checks, 'unit_tests') && contains(inputs.checks, 'e2e_tests')) || success('test_coverage_verification')) &&
@@ -480,7 +481,7 @@ jobs:
           dockerfile: ${{ needs.setup.outputs.dockerfile }}
           name: ${{ needs.setup.outputs.image-name }}
           platforms: ${{ (inputs.lambda-build || needs.setup.outputs.is-release == 'true') && 'linux/amd64' || inputs.platforms }}
-          push: false
+          push: ${{ inputs.publish-image && !inputs.lambda-build }}
           is-release: ${{ needs.setup.outputs.is-release }}
           max-memory: 8Gi
           use-emulation: ${{ needs.setup.outputs.use-emulation }}
