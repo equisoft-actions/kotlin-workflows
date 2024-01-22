@@ -159,7 +159,7 @@ jobs:
           retention-days: 5
 
       - name: Run unit tests
-        uses: equisoft-actions/gradle-junit@v2
+        uses: equisoft-actions/gradle-junit@v3
         if: contains(inputs.checks, 'unit_tests')
         with:
           working-directory: ${{ inputs.working-directory }}
@@ -170,7 +170,7 @@ jobs:
             gpr.key=${{ secrets.GPR_KEY }}
 
       - name: Run e2e tests
-        uses: equisoft-actions/gradle-junit@v2
+        uses: equisoft-actions/gradle-junit@v3
         if: contains(inputs.checks, 'e2e_tests')
         with:
           working-directory: ${{ inputs.working-directory }}
@@ -181,7 +181,7 @@ jobs:
             gpr.key=${{ secrets.GPR_KEY }}
 
       - name: Validate test coverage
-        uses: equisoft-actions/gradle-jacoco-check@v2
+        uses: equisoft-actions/gradle-jacoco-check@v3
         if: (contains(inputs.checks, 'unit_tests') || contains(inputs.checks, 'e2e_tests'))
         with:
           working-directory: ${{ inputs.working-directory }}
