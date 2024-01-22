@@ -353,7 +353,7 @@ jobs:
         uses: equisoft-actions/with-asdf-vm@v2
 
       - name: Run unit tests
-        uses: equisoft-actions/gradle-junit@v2
+        uses: equisoft-actions/gradle-junit@d2b5986f778accad4a2c22834ab71bdaf1cad780
         with:
           working-directory: ${{ inputs.working-directory }}
           gradle-project-path: ${{ inputs.gradle-subproject }}
@@ -377,7 +377,7 @@ jobs:
         uses: equisoft-actions/with-asdf-vm@v2
 
       - name: Run e2e tests
-        uses: equisoft-actions/gradle-junit@v2
+        uses: equisoft-actions/gradle-junit@d2b5986f778accad4a2c22834ab71bdaf1cad780
         with:
           working-directory: ${{ inputs.working-directory }}
           gradle-project-path: ${{ inputs.gradle-subproject }}
@@ -405,7 +405,7 @@ jobs:
         uses: equisoft-actions/with-asdf-vm@v2
 
       - name: Validate test coverage
-        uses: equisoft-actions/gradle-jacoco-check@v2
+        uses: equisoft-actions/gradle-jacoco-check@9c5d5cf28c732ffe0e7103f4d602e9fbb20fccb7
         with:
           working-directory: ${{ inputs.working-directory }}
           gradle-project-path: ${{ inputs.gradle-subproject }}
