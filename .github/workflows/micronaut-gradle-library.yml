@@ -89,7 +89,7 @@ jobs:
           fetch-depth: 0
 
       - name: Validate Gradle Wrappers
-        uses: gradle/wrapper-validation-action@v1
+        uses: gradle/wrapper-validation-action@v2
 
       - name: Application metadata
         id: metadata
@@ -202,7 +202,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Validate Gradle Wrappers
-        uses: gradle/wrapper-validation-action@v1
+        uses: gradle/wrapper-validation-action@v2
 
       - name: Setup asdf-vm
         uses: equisoft-actions/with-asdf-vm@v2
