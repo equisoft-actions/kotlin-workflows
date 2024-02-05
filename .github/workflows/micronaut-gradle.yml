@@ -188,7 +188,7 @@ jobs:
           fetch-depth: 0
 
       - name: Validate Gradle Wrappers
-        uses: gradle/wrapper-validation-action@v1
+        uses: gradle/wrapper-validation-action@v2
 
       - name: Application metadata
         id: metadata
