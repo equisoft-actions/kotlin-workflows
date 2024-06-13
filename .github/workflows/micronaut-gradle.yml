@@ -586,6 +586,7 @@ jobs:
     name: Notify
     runs-on: ubuntu-latest
     needs:
+      - pre_checks
       - setup
       - compile
       - static_analysis
@@ -603,3 +604,28 @@ jobs:
         with:
           needs: ${{ toJSON(needs) }}
           slack-webhook-url: ${{ secrets.SLACK_NOTIFICATION_WEBHOOK_URL }}
+
+  status:
+    name: Status
+    runs-on: ubuntu-latest
+    needs:
+      - pre_checks
+      - setup
+      - compile
+      - static_analysis
+      - unit_tests
+      - e2e_tests
+      - test_coverage_verification
+      - lint_dockerfiles
+      - image
+      - generate_sdk
+    if: ${{ !cancelled() }}
+    env:
+      SUCCESS: >
+        ${{
+          needs.pre_checks.result == 'success' &&
+            needs.*.result != 'failure'
+        }}
+    steps:
+      - name: Status
+        run: $SUCCESS || exit 1 
