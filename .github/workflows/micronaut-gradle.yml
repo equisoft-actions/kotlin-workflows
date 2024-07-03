@@ -607,7 +607,7 @@ jobs:
 
     steps:
       - name: Post workflow status
-        uses: equisoft-actions/notify-workflow-status@dev/customize_channel
+        uses: equisoft-actions/notify-workflow-status@v2
         with:
           needs: ${{ toJSON(needs) }}
           downgrade-to-warning: docker-security,generate_sdk
