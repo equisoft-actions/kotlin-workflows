@@ -194,7 +194,7 @@ jobs:
           fetch-depth: 0
 
       - name: Validate Gradle Wrappers
-        uses: gradle/actions/wrapper-validation@v3
+        uses: gradle/actions/wrapper-validation@v4
 
       - name: Application metadata
         id: metadata
@@ -288,7 +288,7 @@ jobs:
         uses: equisoft-actions/with-asdf-vm@v2
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
         with:
           cache-read-only: false
 
@@ -326,7 +326,7 @@ jobs:
         uses: equisoft-actions/with-asdf-vm@v2
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
 
       - name:  Run static check analysis
         shell: bash
@@ -462,7 +462,7 @@ jobs:
         if: needs.setup.outputs.micronaut-gradle-installed == 'true'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Prepare image context
         shell: bash
