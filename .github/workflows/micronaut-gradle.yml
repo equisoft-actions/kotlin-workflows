@@ -193,9 +193,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Validate Gradle Wrappers
-        uses: gradle/actions/wrapper-validation@v4
-
       - name: Application metadata
         id: metadata
         uses: equisoft-actions/application-metadata@v1
