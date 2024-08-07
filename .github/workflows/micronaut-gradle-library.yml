@@ -94,9 +94,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Validate Gradle Wrappers
-        uses: gradle/actions/wrapper-validation@v3
-
       - name: Application metadata
         id: metadata
         uses: equisoft-actions/application-metadata@v1
@@ -133,7 +130,7 @@ jobs:
         uses: equisoft-actions/with-asdf-vm@v2
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Compile source and test code
         shell: bash
@@ -207,14 +204,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Validate Gradle Wrappers
-        uses: gradle/actions/wrapper-validation@v3
-
       - name: Setup asdf-vm
         uses: equisoft-actions/with-asdf-vm@v2
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Publish
         shell: bash
