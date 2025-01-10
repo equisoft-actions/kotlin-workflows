@@ -114,6 +114,25 @@ on:
           Defaults to $ {{ github.event.repository.custom_properties.ci_slack_channel }}.
         required: false
         type: string
+      php-composer-install:
+        description: Run composer install for hybrid repositories. Defaults to `false`.
+        required: false
+        default: false
+        type: boolean
+      php-working-directory:
+        description: "PHP working directory"
+        default: '.'
+        required: false
+        type: string
+      php-version:
+        description: 'Setup PHP version.'
+        default: '8.3'
+        required: false
+        type: string
+      php-extensions:
+        description: 'Setup PHP extensions.'
+        required: false
+        type: string
     secrets:
       GPR_USER:
         description: A username with write access to Github Package registry.
@@ -381,6 +400,20 @@ jobs:
       - name: Setup asdf-vm
         uses: equisoft-actions/with-asdf-vm@v2
 
+      - name: Setup PHP
+        uses: equisoft-actions/setup-php@v1
+        if: inputs.php-composer-install
+        with:
+          php-version: ${{ inputs.php-version }}
+          extensions: ${{ inputs.php-extensions }}
+
+      - name: Composer install
+        uses: equisoft-actions/composer@v1
+        if: inputs.php-composer-install
+        with:
+          gpr-key: ${{ secrets.GPR_KEY}}
+          working-directory: ${{ inputs.php-working-directory }}
+
       - name: Run e2e tests
         uses: equisoft-actions/gradle-junit@v3
         with:
@@ -460,6 +493,20 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
+
+      - name: Setup PHP
+        uses: equisoft-actions/setup-php@v1
+        if: inputs.php-composer-install
+        with:
+          php-version: ${{ inputs.php-version }}
+          extensions: ${{ inputs.php-extensions }}
+
+      - name: Composer install
+        uses: equisoft-actions/composer@v1
+        if: inputs.php-composer-install
+        with:
+          gpr-key: ${{ secrets.GPR_KEY}}
+          working-directory: ${{ inputs.php-working-directory }}
 
       - name: Prepare image context
         shell: bash
