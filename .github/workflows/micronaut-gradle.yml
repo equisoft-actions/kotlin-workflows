@@ -433,7 +433,7 @@ jobs:
       !failure() &&
       !cancelled() &&
       (contains(inputs.checks, 'unit_tests') || contains(inputs.checks, 'e2e_tests')) &&
-      (success('unit_tests') || success('e2e_tests'))
+      (needs.unit_tests.result == 'success' || needs.e2e_tests.result == 'success')
 
     steps:
       - name: Checkout
@@ -479,9 +479,9 @@ jobs:
       needs.setup.outputs.publishable == 'true' &&
       !failure() &&
       !cancelled() &&
-      (!(contains(inputs.checks, 'unit_tests') && contains(inputs.checks, 'e2e_tests')) || success('test_coverage_verification')) &&
-      (!contains(inputs.checks, 'static_analysis') || success('static_analysis')) &&
-      (!contains(inputs.checks, 'lint_dockerfiles') || success('lint_dockerfiles'))
+      (!(contains(inputs.checks, 'unit_tests') && contains(inputs.checks, 'e2e_tests')) || needs.test_coverage_verification.result == 'success') &&
+      (!contains(inputs.checks, 'static_analysis') || needs.static_analysis.result == 'success') &&
+      (!contains(inputs.checks, 'lint_dockerfiles') || needs.lint_dockerfiles.result == 'success')
 
     steps:
       - name: Checkout
@@ -573,7 +573,7 @@ jobs:
     uses: equisoft-actions/docker-workflows/.github/workflows/security.yml@v2
     if: |
       inputs.publish-image &&
-      success('image') &&
+      needs.image.result == 'success' &&
       !failure() &&
       !cancelled()
     needs:
@@ -601,8 +601,8 @@ jobs:
       !failure() &&
       !cancelled() &&
       inputs.enable-openapi-sdk != '' &&
-      (! (contains(inputs.checks, 'unit_tests') && contains(inputs.checks, 'e2e_tests')) || success('test_coverage_verification')) &&
-      (!contains(inputs.checks, 'static_analysis') || success('static_analysis'))
+      (! (contains(inputs.checks, 'unit_tests') && contains(inputs.checks, 'e2e_tests')) || needs.test_coverage_verification.result == 'success') &&
+      (!contains(inputs.checks, 'static_analysis') || needs.static_analysis.result == 'success')
 
     steps:
       - name: Checkout
