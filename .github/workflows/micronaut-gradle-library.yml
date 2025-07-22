@@ -221,8 +221,8 @@ jobs:
             -Pgpr.write.user=${{ secrets.GPR_USER }} \
             -Pgpr.write.key=${{ secrets.GPR_KEY }}
 
-  notify:
-    name: Notify
+  workflow-status:
+    name: Workflow status
     runs-on: ubuntu-latest
     needs:
       - pre_checks
@@ -236,6 +236,6 @@ jobs:
         uses: equisoft-actions/notify-workflow-status@v2
         with:
           needs: ${{ toJSON(needs) }}
-          downgrade-to-warning: generate_sdk
+          slack-enabled: ${{ needs.setup.outputs.publishable }}
           slack-bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
           slack-channel: ${{ inputs.slack-channel || github.event.repository.custom_properties.ci_slack_channel }}
