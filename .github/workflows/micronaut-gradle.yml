@@ -29,6 +29,16 @@ on:
         required: false
         type: string
         default: ""
+      instance-size:
+        description: "The size of the instance to run the application on."
+        required: false
+        type: string
+        default: "large"
+      use-self-hosted:
+        description: "Use self-hosted runners for the workflow."
+        required: false
+        type: boolean
+        default: true
       native-build:
         description: |
           `true` if this project should produce a native executable through GraalVM. This actions expects the
@@ -57,6 +67,11 @@ on:
         required: false
         default: true
         type: boolean
+      pull:
+        description: Always attempt to pull all referenced images
+        type: boolean
+        required: false
+        default: false
       enable-openapi:
         description: "Enable generation and upload of an OpenAPI specification. Defaults to `false`."
         required: false
@@ -468,13 +483,47 @@ jobs:
           dockerfile: ${{ needs.setup.outputs.dockerfile }}
           working-directory: ${{ inputs.working-directory }}
 
-  image:
-    name: Build image
-    runs-on: ${{ needs.setup.outputs.build-image-runner }}
+  prepare_docker_metadata:
+    runs-on: ubuntu-latest
+    needs:
+      - setup
+    outputs:
+      annotations: ${{ steps.metadata.outputs.annotations }}
+      labels: ${{ steps.metadata.outputs.labels }}
+      matrix-include: ${{ steps.metadata.outputs.matrix-include }}
+      runner-config: ${{ steps.metadata.outputs.runner-config }}
+      tags: ${{ steps.metadata.outputs.tags }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Prepare image data
+        id: metadata
+        uses: equisoft-actions/docker-metadata@v1
+        with:
+          title: ${{ inputs.name }}
+          image-name: ${{ secrets.ECR_REGISTRY }}/${{ inputs.name }}
+          release: ${{ needs.setup.outputs.is-release }}
+          version: ${{ needs.setup.outputs.version }}
+          platforms: ${{ inputs.platforms }}
+          use-self-hosted: ${{ inputs.use-self-hosted }}
+          instance-size: ${{ inputs.instance-size }}
+
+  ##############################
+  # Utiliser tout ce qu'il y a dans le workflow multi-step
+  # DONE Ajouter variables(inputs) pour self-hosted et instance size
+  # DONE Utiliser ECR_ROLE pour role to assume plutot que inputs.role-to-assume
+  # DONE PREPARE, Renomer image pour build-and-push, Create manifest, enlever output image.
+  # DONE Comment out lambda jusqu'à ce qu'on trouve une solution
+  # DONE Retirer les with inutiles qui se retrouvent
+
+  multi-step-build-push:
+    name: Build ${{ matrix.platform }}
+    runs-on: ${{ fromJSON(format(needs.prepare_docker_metadata.outputs.runner-config, matrix.arch)) }}
+    needs: [setup, lint_dockerfiles, static_analysis, test_coverage_verification, prepare_docker_metadata]
     outputs:
       image-tag: ${{ steps.output-pushed-image.outputs.image-tag }}
-      lambda-artifact: ${{ steps.extract-lambda.outputs.filename }}
-    needs: [setup, lint_dockerfiles, static_analysis, test_coverage_verification]
+      # lambda-artifact: ${{ steps.extract-lambda.outputs.filename }}
     if: |
       needs.setup.outputs.publishable == 'true' &&
       !failure() &&
@@ -483,10 +532,13 @@ jobs:
       (!contains(inputs.checks, 'static_analysis') || needs.static_analysis.result == 'success') &&
       (!contains(inputs.checks, 'lint_dockerfiles') || needs.lint_dockerfiles.result == 'success')
 
+    strategy:
+      fail-fast: true
+      matrix:
+        include: ${{ fromJson(needs.prepare_docker_metadata.outputs.matrix-include) }}
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
-
       - name: Setup asdf-vm
         uses: equisoft-actions/with-asdf-vm@v2
         if: needs.setup.outputs.micronaut-gradle-installed == 'true'
@@ -517,13 +569,11 @@ jobs:
             -Pgpr.user=${{ secrets.GPR_USER }} \
             -Pgpr.key=${{ secrets.GPR_KEY }}
 
-      - name: Build and push
-        id: build-and-push
-        uses: equisoft-actions/docker-build-and-push@v2
+      - name: Build and push ${{ matrix.platform }}
+        id: build
+        uses: equisoft-actions/docker-build-and-push@v3
         with:
-          registry: ${{ secrets.ECR_REGISTRY }}
-          aws-access-key-id: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
+          annotations: ${{ needs.prepare_docker_metadata.outputs.annotations }}
           aws-region: ${{ secrets.ECR_AWS_REGION }}
           build-args: |
             APPLICATION_VERSION=${{ needs.setup.outputs.version }}
@@ -531,55 +581,74 @@ jobs:
             GPR_KEY=${{ secrets.GPR_KEY }}
           context: ${{ needs.setup.outputs.docker-context }}
           dockerfile: ${{ needs.setup.outputs.dockerfile }}
+          labels: ${{ needs.prepare_docker_metadata.outputs.labels }}
           name: ${{ needs.setup.outputs.image-name }}
-          platforms: ${{ (inputs.lambda-build || needs.setup.outputs.is-release == 'true') && 'linux/amd64' || inputs.platforms }}
+          platforms: ${{ matrix.platform }}
+          pull: ${{ inputs.pull }}
           push: ${{ inputs.publish-image && !inputs.lambda-build }}
-          is-release: ${{ needs.setup.outputs.is-release }}
-          max-memory: 16Gi
-          use-emulation: ${{ needs.setup.outputs.use-emulation }}
-          version: ${{ needs.setup.outputs.version }}
+          push-manifest: "false"
+          registry: ${{ secrets.ECR_REGISTRY }}
+          role-to-assume: ${{ vars.ECR_ROLE }}
+          tags: ${{ needs.prepare_docker_metadata.outputs.tags }}
           working-directory: ${{ inputs.working-directory }}
 
-      - name: Output pushed image tag
-        id: output-pushed-image
-        if: inputs.publish-image && !inputs.lambda-build
-        shell: bash
-        run: |
-          echo "image-tag=${{ needs.setup.outputs.image-name }}:${{ steps.build-and-push.outputs.image-version }}" >> $GITHUB_OUTPUT
 
-      - name: Extract lambda from image
-        id: extract-lambda
-        if: inputs.lambda-build
-        shell: bash
-        run: |
-          filename=app-${{ needs.setup.outputs.version }}-lambda.zip
-          container_id=fn
+      # - name: Extract lambda from image
+      #   id: extract-lambda
+      #   if: inputs.lambda-build
+      #   shell: bash
+      #   run: |
+      #     filename=app-${{ needs.setup.outputs.version }}-lambda.zip
+      #     container_id=fn
 
-          docker create --name "$container_id" "${{ steps.build-and-push.outputs.image-id }}"
-          docker cp "$container_id:/function/function.zip" "$filename"
-          docker rm -v "$container_id"
+      #     docker create --name "$container_id" "${{ steps.build-and-push.outputs.image-id }}"
+      #     docker cp "$container_id:/function/function.zip" "$filename"
+      #     docker rm -v "$container_id"
 
-          echo "filename=$filename" >> $GITHUB_OUTPUT
+      #     echo "filename=$filename" >> $GITHUB_OUTPUT
 
-      - name: Upload lambda artifact
-        uses: actions/upload-artifact@v4
-        if: inputs.lambda-build
+      # - name: Upload lambda artifact
+      #   uses: actions/upload-artifact@v4
+      #   if: inputs.lambda-build
+      #   with:
+      #     name: ${{ steps.extract-lambda.outputs.filename }}
+      #     path: ${{ steps.extract-lambda.outputs.filename }}
+      #     retention-days: 1
+
+  
+  create-manifest:
+    name: Create manifest
+    runs-on: ubuntu-latest
+    needs:
+      - prepare_docker_metadata
+      - multi-step-build-push
+    if: ${{ inputs.publish-image && !inputs.lambda-build }}
+    outputs:
+      image-id: ${{ steps.create.outputs.image-id }}
+      image-version: ${{ steps.create.outputs.image-version }}
+    steps:
+      - name: Create manifest
+        id: create
+        uses: equisoft-actions/create-manifest@v1
         with:
-          name: ${{ steps.extract-lambda.outputs.filename }}
-          path: ${{ steps.extract-lambda.outputs.filename }}
-          retention-days: 1
+          registry: ${{ secrets.ECR_REGISTRY }}
+          name: ${{ needs.setup.outputs.image-name }}
+          tags: ${{ needs.prepare_docker_metadata_docker_metadata.outputs.tags }}
+          aws-region: ${{ secrets.ECR_AWS_REGION }}
+          role-to-assume: ${{ vars.ECR_ROLE }}
+          role-session-name: ${{ github.run_id }}
 
   docker-security:
     uses: equisoft-actions/docker-workflows/.github/workflows/security.yml@v2
     if: |
       inputs.publish-image &&
-      needs.image.result == 'success' &&
+      needs.multi-step-build-push.result == 'success' &&
       !failure() &&
       !cancelled()
     needs:
-      - image
+      - multi-step-build-push
     with:
-      image-tag: ${{ needs.image.outputs.image-tag }}
+      image-tag: ${{ needs.multi-step-build-push.outputs.image-tag }}
       working-directory: ${{ inputs.working-directory }}
     secrets:
       REGISTRY: ${{ secrets.ECR_REGISTRY }}
@@ -644,7 +713,7 @@ jobs:
       - e2e_tests
       - test_coverage_verification
       - lint_dockerfiles
-      - image
+      - multi-step-build-push
       - docker-security
       - generate_sdk
     if: always()
