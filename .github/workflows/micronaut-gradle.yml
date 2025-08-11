@@ -152,15 +152,16 @@ on:
         description: "The role to assume when publishing to ECR."
         required: true
         type: string
+      registry:
+        description: The registry where the image will be pushed to
+        type: string
+        required: true
     secrets:
       GPR_USER:
         description: A username with write access to Github Package registry.
         required: true
       GPR_KEY:
         description: A PAT with write access to Github Package registry.
-        required: true
-      ECR_REGISTRY:
-        description: The AWS ECR registry where the image will be pushed to.
         required: true
       ECR_AWS_REGION:
         description: AWS region for the registry.
@@ -181,9 +182,10 @@ on:
 
 permissions:
   actions: read
-  contents: write
+  contents: read
   id-token: write
   security-events: write
+  pull-requests: write
 
 jobs:
   pre_checks:
@@ -487,6 +489,7 @@ jobs:
           working-directory: ${{ inputs.working-directory }}
 
   prepare_docker_metadata:
+    name: Prepare Docker metadata
     runs-on: ubuntu-latest
     needs: [setup, lint_dockerfiles, static_analysis, test_coverage_verification]
     if: |
@@ -511,7 +514,7 @@ jobs:
         uses: equisoft-actions/docker-metadata@v1
         with:
           title: ${{ inputs.name }}
-          image-name: ${{ secrets.ECR_REGISTRY }}/${{ inputs.name }}
+          image-name: ${{ inputs.registry }}/${{ inputs.name }}
           release: ${{ needs.setup.outputs.is-release }}
           version: ${{ needs.setup.outputs.version }}
           # platforms: ${{ (inputs.lambda-build || needs.setup.outputs.is-release == 'true') && 'linux/amd64' || inputs.platforms }}
@@ -586,7 +589,7 @@ jobs:
           pull: ${{ inputs.pull }}
           push: ${{ inputs.publish-image && !inputs.lambda-build }}
           push-manifest: "false"
-          registry: ${{ secrets.ECR_REGISTRY }}
+          registry: ${{ inputs.registry }}
           role-to-assume: ${{ inputs.role-to-assume }}
           tags: ${{ needs.prepare_docker_metadata.outputs.tags }}
           working-directory: ${{ inputs.working-directory }}
@@ -634,7 +637,7 @@ jobs:
         id: create
         uses: equisoft-actions/create-manifest@v1
         with:
-          registry: ${{ secrets.ECR_REGISTRY }}
+          registry: ${{ inputs.registry }}
           name: ${{ needs.setup.outputs.image-name }}
           tags: ${{ needs.prepare_docker_metadata.outputs.tags }}
           aws-region: ${{ secrets.ECR_AWS_REGION }}
@@ -656,7 +659,7 @@ jobs:
       role-to-assume: ${{ inputs.role-to-assume }}
       role-session-name: "micronaut-docker-security-${{ github.run_id }}"
     secrets:
-      REGISTRY: ${{ secrets.ECR_REGISTRY }}
+      REGISTRY: ${{ inputs.registry}}
       ECR_AWS_REGION: ${{ secrets.ECR_AWS_REGION }}
 
   generate_sdk:
