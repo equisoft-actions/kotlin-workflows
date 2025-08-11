@@ -508,6 +508,7 @@ jobs:
           image-name: ${{ secrets.ECR_REGISTRY }}/${{ inputs.name }}
           release: ${{ needs.setup.outputs.is-release }}
           version: ${{ needs.setup.outputs.version }}
+          # platforms: ${{ (inputs.lambda-build || needs.setup.outputs.is-release == 'true') && 'linux/amd64' || inputs.platforms }}
           platforms: ${{ inputs.platforms }}
           use-self-hosted: ${{ inputs.use-self-hosted }}
           instance-size: ${{ inputs.instance-size }}
@@ -709,7 +710,7 @@ jobs:
       - e2e_tests
       - test_coverage_verification
       - lint_dockerfiles
-      - multi-step-build-push
+      - create-manifest
       - docker-security
       - generate_sdk
     if: always()
