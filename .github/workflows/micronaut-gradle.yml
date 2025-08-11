@@ -518,15 +518,6 @@ jobs:
           platforms: ${{ inputs.platforms }}
           use-self-hosted: ${{ inputs.use-self-hosted }}
 
-      - name: Prepare github runners
-        id: runners
-        uses: equisoft-actions/docker-metadata@v1
-        with:
-          title: ${{ inputs.name }}
-          image-name: ${{ inputs.registry }}/${{ inputs.name }}
-          release: ${{ needs.setup.outputs.is-release }}
-          version: ${{ needs.setup.outputs.version }}
-
       - name: Prepare image data
         id: metadata
         uses: equisoft-actions/docker-metadata@v1
