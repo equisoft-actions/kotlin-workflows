@@ -502,12 +502,30 @@ jobs:
     outputs:
       annotations: ${{ steps.metadata.outputs.annotations }}
       labels: ${{ steps.metadata.outputs.labels }}
-      matrix-include: ${{ steps.metadata.outputs.matrix-include }}
-      runner-config: ${{ steps.metadata.outputs.runner-config }}
+      matrix-include: ${{ steps.runners.outputs.matrix-include }}
+      runner-config: ${{ steps.runners.outputs.runner-config }}
       tags: ${{ steps.metadata.outputs.tags }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Prepare github runners
+        id: runners
+        uses: equisoft-actions/docker-runners@v1
+        with:
+          instance-size: ${{ inputs.instance-size }}
+          # platforms: ${{ (inputs.lambda-build || needs.setup.outputs.is-release == 'true') && 'linux/amd64' || inputs.platforms }}
+          platforms: ${{ inputs.platforms }}
+          use-self-hosted: ${{ inputs.use-self-hosted }}
+
+      - name: Prepare github runners
+        id: runners
+        uses: equisoft-actions/docker-metadata@v1
+        with:
+          title: ${{ inputs.name }}
+          image-name: ${{ inputs.registry }}/${{ inputs.name }}
+          release: ${{ needs.setup.outputs.is-release }}
+          version: ${{ needs.setup.outputs.version }}
 
       - name: Prepare image data
         id: metadata
@@ -517,10 +535,6 @@ jobs:
           image-name: ${{ inputs.registry }}/${{ inputs.name }}
           release: ${{ needs.setup.outputs.is-release }}
           version: ${{ needs.setup.outputs.version }}
-          # platforms: ${{ (inputs.lambda-build || needs.setup.outputs.is-release == 'true') && 'linux/amd64' || inputs.platforms }}
-          platforms: ${{ inputs.platforms }}
-          use-self-hosted: ${{ inputs.use-self-hosted }}
-          instance-size: ${{ inputs.instance-size }}
 
   docker-build-push:
     name: Build ${{ matrix.platform }}
