@@ -180,7 +180,10 @@ on:
         value: ${{ jobs.setup.outputs.version }}
 
 permissions:
+  actions: read
+  contents: write
   id-token: write
+  security-events: write
 
 jobs:
   pre_checks:
