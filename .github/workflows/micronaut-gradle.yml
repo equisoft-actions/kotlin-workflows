@@ -518,8 +518,8 @@ jobs:
         id: metadata
         uses: equisoft-actions/docker-metadata@v1
         with:
-          title: ${{ inputs.name }}
-          image-name: ${{ inputs.registry }}/${{ inputs.name }}
+          title: ${{ needs.setup.outputs.image-name }}
+          image-name: ${{ inputs.registry }}/${{ needs.setup.outputs.image-name }}
           release: ${{ needs.setup.outputs.is-release }}
           version: ${{ needs.setup.outputs.version }}
 
