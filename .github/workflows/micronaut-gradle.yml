@@ -218,7 +218,7 @@ jobs:
       micronaut-gradle-installed: ${{ steps.build-metadata.outputs.micronaut-gradle-installed }}
       openapi-file: ${{ steps.build-metadata.outputs.openapi-file }}
       build-image-runner: ${{ steps.build-metadata.outputs.build-image-runner }}
-      publishable: ${{ steps.metadata.outputs.publishable }}
+      publishable: ${{ steps.build-metadata.outputs.publishable }}
       is-hotfix: ${{ steps.metadata.outputs.is-hotfix }}
       sdk-generators-matrix: ${{ steps.build-metadata.outputs.sdk-generators-matrix }}
       version: ${{ steps.metadata.outputs.version }}
@@ -242,6 +242,9 @@ jobs:
         id: build-metadata
         shell: bash
         run: |
+          # for testing only
+          echo "publishable=true" >> $GITHUB_OUTPUT
+          
           BASE_NAME=${{ inputs.name }}
           FULL_NAME=$BASE_NAME
           GRADLE_SUBPROJECT=${{ inputs.gradle-subproject }}
