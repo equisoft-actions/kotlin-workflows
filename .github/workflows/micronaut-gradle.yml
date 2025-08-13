@@ -244,7 +244,7 @@ jobs:
         run: |
           # for testing only
           echo "publishable=true" >> $GITHUB_OUTPUT
-          
+
           BASE_NAME=${{ inputs.name }}
           FULL_NAME=$BASE_NAME
           GRADLE_SUBPROJECT=${{ inputs.gradle-subproject }}
@@ -653,6 +653,7 @@ jobs:
       !failure() &&
       !cancelled()
     needs:
+      - setup
       - create-manifest
     with:
       image-tag: ${{ needs.setup.outputs.image-name }}:${{ needs.create-manifest.outputs.image-version }}
