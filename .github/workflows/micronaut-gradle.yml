@@ -652,7 +652,7 @@ jobs:
     needs:
       - create-manifest
     with:
-      image-tag: ${{ inputs.name }}:${{ needs.create-manifest.outputs.image-version }}
+      image-tag: ${{ needs.setup.outputs.image-name }}:${{ needs.create-manifest.outputs.image-version }}
       working-directory: ${{ inputs.working-directory }}
       role-to-assume: ${{ inputs.role-to-assume }}
       role-session-name: "micronaut-docker-security-${{ github.run_id }}"
