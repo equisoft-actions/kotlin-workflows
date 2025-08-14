@@ -518,8 +518,10 @@ jobs:
   docker-build-push:
     name: Build ${{ matrix.platform }}
     runs-on: ${{ fromJSON(format(needs.prepare_docker_metadata.outputs.runner-config, matrix.arch)) }}
-    needs: [setup, lint_dockerfiles, static_analysis, test_coverage_verification, prepare_docker_metadata]
+    needs: [setup, prepare_docker_metadata]
     if: |
+      needs.prepare_docker_metadata.result == 'success' &&
+      needs.setup.outputs.publishable == 'true' &&
       !failure() &&
       !cancelled()
     strategy:
