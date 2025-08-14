@@ -713,6 +713,8 @@ jobs:
       - test_coverage_verification
       - lint_dockerfiles
       - create-manifest
+      - prepare_docker_metadata
+      - docker-build-push
       - docker-security
       - generate_sdk
     if: always()
