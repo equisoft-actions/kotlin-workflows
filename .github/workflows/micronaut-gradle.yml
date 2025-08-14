@@ -183,6 +183,7 @@ permissions:
   id-token: write
   security-events: write
   pull-requests: write
+  packages: write
 
 jobs:
   pre_checks:
