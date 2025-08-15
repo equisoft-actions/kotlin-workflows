@@ -616,6 +616,7 @@ jobs:
       - prepare_docker_metadata
       - docker-build-push
     if: |
+      needs.docker-build-push.result == 'success' &&
       needs.setup.outputs.publishable == 'true' &&
       inputs.publish-image &&
       !inputs.lambda-build &&
