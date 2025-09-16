@@ -233,7 +233,7 @@ jobs:
       - setup
       - build
       - publish
-    if: always() && needs.setup.outputs.publishable == 'true'
+    if: always()
 
     steps:
       - name: Post workflow status
