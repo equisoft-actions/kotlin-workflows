@@ -536,16 +536,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
 
-      - name: Validate .tool-versions on ${{ matrix.platform }}
-        uses: equisoft-actions/validate-tool-versions@DOPS-6087/prepare-repository
-        if: contains(github.event.pull_request.changed_files, '.tool-versions')
-        with:
-          working-directory: '.'
-
       - name: Setup asdf-vm
         uses: equisoft-actions/with-asdf-vm@v2
         if: needs.setup.outputs.micronaut-gradle-installed == 'true'
 
+      - name: Validate .tool-versions on ${{ matrix.platform }}
+        uses: equisoft-actions/validate-tool-versions@DOPS-6087/prepare-repository
+        with:
+          working-directory: '.'
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
