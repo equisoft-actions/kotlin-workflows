@@ -341,6 +341,35 @@ jobs:
           retention-days: 5
           if-no-files-found: error
 
+  validate-tool-versions:
+    name: Validate .tool-versions
+    needs: [setup]
+    strategy:
+      matrix:
+        include:
+          - platform: linux/amd64
+            runs-on: [self-hosted, amd64-2xsmall]
+          - platform: linux/arm64
+            runs-on: [self-hosted, arm64-2xsmall]
+    runs-on: ${{ matrix.runs-on }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Get changed .tool-versions file
+        id: changed-tool-versions-file
+        uses: tj-actions/changed-files@v47
+        with:
+          files: |
+            **.tool-versions
+
+      - name: Validate .tool-versions
+        if: steps.changed-tool-versions-file.outputs.any_changed == 'true'
+        uses: equisoft-actions/validate-tool-versions@DOPS-6087/prepare-repository
+        with:
+          working-directory: '.'
+
   static_analysis:
     name: Static analysis
     runs-on: ubuntu-latest
@@ -539,11 +568,6 @@ jobs:
       - name: Setup asdf-vm
         uses: equisoft-actions/with-asdf-vm@v2
         if: needs.setup.outputs.micronaut-gradle-installed == 'true'
-
-      - name: Validate .tool-versions on ${{ matrix.platform }}
-        uses: equisoft-actions/validate-tool-versions@DOPS-6087/prepare-repository
-        with:
-          working-directory: '.'
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
