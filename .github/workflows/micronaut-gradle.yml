@@ -544,6 +544,7 @@ jobs:
         uses: equisoft-actions/validate-tool-versions@DOPS-6087/prepare-repository
         with:
           working-directory: '.'
+
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
