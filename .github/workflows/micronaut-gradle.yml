@@ -226,7 +226,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -309,7 +309,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup asdf-vm
         uses: equisoft-actions/with-asdf-vm@v2
@@ -347,7 +347,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup asdf-vm
         uses: equisoft-actions/with-asdf-vm@v2
@@ -382,7 +382,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup asdf-vm
         uses: equisoft-actions/with-asdf-vm@v2
@@ -406,7 +406,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup asdf-vm
         uses: equisoft-actions/with-asdf-vm@v2
@@ -448,7 +448,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup asdf-vm
         uses: equisoft-actions/with-asdf-vm@v2
@@ -472,7 +472,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Validate Dockerfile
         uses: equisoft-actions/hadolint@v1
         with:
@@ -498,7 +498,7 @@ jobs:
       tags: ${{ steps.metadata.outputs.tags }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Prepare github runners
         id: runners
@@ -532,7 +532,7 @@ jobs:
         include: ${{ fromJson(needs.prepare_docker_metadata.outputs.matrix-include) }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup asdf-vm
         uses: equisoft-actions/with-asdf-vm@v2
@@ -676,7 +676,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup asdf-vm
         uses: equisoft-actions/with-asdf-vm@v2
