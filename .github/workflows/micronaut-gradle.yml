@@ -346,9 +346,9 @@ jobs:
       matrix:
         include:
           - platform: linux/amd64
-            runs-on: [self-hosted, amd64-xsmall]
+            runs-on: ubuntu-latest
           - platform: linux/arm64
-            runs-on: [self-hosted, arm64-xsmall]
+            runs-on: ubuntu-24.04-arm
     runs-on: ${{ matrix.runs-on }}
 
     steps:
