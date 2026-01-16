@@ -339,6 +339,14 @@ jobs:
           retention-days: 5
           if-no-files-found: error
 
+      - name: Upload openapi.yaml to release assets
+        uses: softprops/action-gh-release@v2
+        if: success() && inputs.enable-openapi && github.ref_type == 'tag' && needs.setup.outputs.is-release == 'true'
+        with:
+          files: |
+            ${{ needs.setup.outputs.subproject-dir }}/build/tmp/kapt3/classes/main/META-INF/swagger/${{ needs.setup.outputs.openapi-file }}
+            ${{ needs.setup.outputs.subproject-dir }}/build/generated/ksp/main/resources/META-INF/swagger/${{ needs.setup.outputs.openapi-file }}
+
   validate-tool-versions:
     name: Validate .tool-versions
     needs: [setup]
