@@ -330,6 +330,7 @@ jobs:
 
       - name: Normalize openapi filename
         id: normalize-openapi-filename
+        if: success() && inputs.enable-openapi
         shell: bash
         run: |
           OPENAPI_FILE=
