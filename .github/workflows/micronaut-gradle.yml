@@ -328,14 +328,29 @@ jobs:
             -Pgpr.user=${{ secrets.GPR_USER }} \
             -Pgpr.key=${{ secrets.GPR_KEY }}
 
+      - name: Normalize openapi filename
+        id: normalize-openapi-filename
+        shell: bash
+        run: |
+          OPENAPI_FILE=
+          NORMALIZED_OPENAPI_FILE=openapi-${{ needs.setup.outputs.openapi-file }}
+          if [ -e "${{ needs.setup.outputs.subproject-dir }}/build/tmp/kapt3/classes/main/META-INF/swagger/${{ needs.setup.outputs.openapi-file }}" ]; then
+            OPENAPI_FILE="${{ needs.setup.outputs.subproject-dir }}/build/tmp/kapt3/classes/main/META-INF/swagger/${{ needs.setup.outputs.openapi-file }}"
+          else
+            OPENAPI_FILE="${{ needs.setup.outputs.subproject-dir }}/build/generated/ksp/main/resources/META-INF/swagger/${{ needs.setup.outputs.openapi-file }}"
+          fi
+
+          cp "$OPENAPI_FILE" "$NORMALIZED_OPENAPI_FILE"
+
+          echo "normalized-openapi-file=${NORMALIZED_OPENAPI_FILE}" >> $GITHUB_OUTPUT
+
       - name: Upload OpenAPI spec
         uses: actions/upload-artifact@v6
         if: success() && inputs.enable-openapi
         with:
-          name: openapi-${{ needs.setup.outputs.openapi-file }}
+          name: ${{ steps.normalize-openapi-filename.outputs.normalized-openapi-file }}
           path: |
-            ${{ needs.setup.outputs.subproject-dir }}/build/tmp/kapt3/classes/main/META-INF/swagger/${{ needs.setup.outputs.openapi-file }}
-            ${{ needs.setup.outputs.subproject-dir }}/build/generated/ksp/main/resources/META-INF/swagger/${{ needs.setup.outputs.openapi-file }}
+            ${{ steps.normalize-openapi-filename.outputs.normalized-openapi-file }}
           retention-days: 5
           if-no-files-found: error
 
@@ -344,8 +359,7 @@ jobs:
         if: success() && inputs.enable-openapi && github.ref_type == 'tag' && needs.setup.outputs.is-release == 'true'
         with:
           files: |
-            ${{ needs.setup.outputs.subproject-dir }}/build/tmp/kapt3/classes/main/META-INF/swagger/${{ needs.setup.outputs.openapi-file }}
-            ${{ needs.setup.outputs.subproject-dir }}/build/generated/ksp/main/resources/META-INF/swagger/${{ needs.setup.outputs.openapi-file }}
+            ${{ steps.normalize-openapi-filename.outputs.normalized-openapi-file }}
 
   validate-tool-versions:
     name: Validate .tool-versions
