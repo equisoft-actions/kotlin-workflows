@@ -160,6 +160,10 @@ on:
         description: "The S3 bucket where the OpenAPI specification will be uploaded."
         required: false
         type: string
+      s3-region-upload-openapi:
+        description: "The AWS region where the OpenAPI specification will be uploaded."
+        required: false
+        type: string
       s3-role-to-assume:
         description: "The role to assume when publishing to S3."
         required: false
@@ -173,9 +177,6 @@ on:
         required: true
       ECR_AWS_REGION:
         description: AWS region for the registry.
-        required: true
-      S3_AWS_REGION:
-        description: AWS region for the S3 bucket.
         required: true
       SLACK_BOT_TOKEN:
         description: The bot token used to authenticate with Slack.
@@ -379,7 +380,7 @@ jobs:
     needs: [setup, compile]
     if: |
       success() && 
-      inputs.enable-openapi 
+      inputs.enable-openapi
     permissions:
       id-token: write
       contents: read
@@ -395,7 +396,7 @@ jobs:
         with:
           role-to-assume: ${{ inputs.s3-role-to-assume }}
           role-session-name: ${{ github.run_id }}-${{ inputs.name }}-openapi-upload
-          aws-region: ${{ secrets.S3_AWS_REGION }}
+          aws-region: ${{ inputs.s3-region-upload-openapi }}
 
       - name: Upload OpenAPI to S3
         shell: bash
