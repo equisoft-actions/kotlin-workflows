@@ -381,9 +381,8 @@ jobs:
     if: |
       success() && 
       inputs.enable-openapi && 
-      github.ref_type == 'tag' && 
-      needs.setup.outputs.is-release == 'true' && 
       needs.setup.outputs.publishable == 'true' && 
+      needs.setup.outputs.is-release != 'true' && 
       needs.setup.outputs.is-hotfix != 'true' &&
       inputs.s3-bucket-upload-openapi != '' &&
       inputs.s3-region-upload-openapi != '' &&
