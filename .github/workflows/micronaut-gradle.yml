@@ -156,6 +156,18 @@ on:
         description: The registry where the image will be pushed to
         type: string
         required: true
+      s3-bucket-upload-openapi:
+        description: "The S3 bucket where the OpenAPI specification will be uploaded."
+        required: false
+        type: string
+      s3-region-upload-openapi:
+        description: "The AWS region where the OpenAPI specification will be uploaded."
+        required: false
+        type: string
+      s3-role-to-assume:
+        description: "The role to assume when publishing to S3."
+        required: false
+        type: string
     secrets:
       GPR_USER:
         description: A username with write access to Github Package registry.
@@ -361,6 +373,43 @@ jobs:
         with:
           files: |
             ${{ steps.normalize-openapi-filename.outputs.normalized-openapi-file }}
+
+  upload_openapi_to_s3:
+    name: Upload OpenAPI to S3
+    runs-on: ubuntu-latest
+    needs: [setup, compile]
+    if: |
+      success() && 
+      inputs.enable-openapi && 
+      needs.setup.outputs.publishable == 'true' && 
+      needs.setup.outputs.is-release != 'true' && 
+      needs.setup.outputs.is-hotfix != 'true' &&
+      inputs.s3-bucket-upload-openapi != '' &&
+      inputs.s3-region-upload-openapi != '' &&
+      inputs.s3-role-to-assume != ''
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Download OpenAPI artifact
+        uses: actions/download-artifact@v6
+        with:
+          name: openapi-${{ needs.setup.outputs.openapi-file }}
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ inputs.s3-role-to-assume }}
+          role-session-name: ${{ github.run_id }}-${{ inputs.name }}-openapi-upload
+          aws-region: ${{ inputs.s3-region-upload-openapi }}
+
+      - name: Upload OpenAPI to S3
+        shell: bash
+        run: |
+          aws s3 cp openapi-${{ needs.setup.outputs.openapi-file }} \
+            s3://${{ inputs.s3-bucket-upload-openapi }}/openapi/${{ inputs.name }}.yml \
+            --content-type "application/x-yaml"
 
   validate-tool-versions:
     name: Validate .tool-versions
@@ -761,6 +810,7 @@ jobs:
       - pre_checks
       - setup
       - compile
+      - upload_openapi_to_s3
       - static_analysis
       - unit_tests
       - e2e_tests
