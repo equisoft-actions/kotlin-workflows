@@ -358,7 +358,7 @@ jobs:
           echo "normalized-openapi-file=${NORMALIZED_OPENAPI_FILE}" >> $GITHUB_OUTPUT
 
       - name: Upload OpenAPI spec
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: success() && inputs.enable-openapi
         with:
           name: ${{ steps.normalize-openapi-filename.outputs.normalized-openapi-file }}
@@ -393,7 +393,7 @@ jobs:
 
     steps:
       - name: Download OpenAPI artifact
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: openapi-${{ needs.setup.outputs.openapi-file }}
 
@@ -466,7 +466,7 @@ jobs:
             -Pgpr.key=${{ secrets.GPR_KEY }}
 
       - name: Upload results
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: success() || failure()
         with:
           name: static-check-reports
@@ -703,7 +703,7 @@ jobs:
           echo "filename=$filename" >> $GITHUB_OUTPUT
 
       - name: Upload lambda artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: inputs.lambda-build
         with:
           name: ${{ steps.extract-lambda.outputs.filename }}
