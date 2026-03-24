@@ -214,7 +214,12 @@ jobs:
             [
               "${{ inputs.workflow-path }}",
               ".tool-versions",
-              "${{ inputs.working-directory }}/**"
+              "${{ inputs.working-directory }}/gradle*",
+              "${{ inputs.working-directory }}/build.gradle*",
+              "${{ inputs.working-directory }}/settings.gradle*",
+              "${{ inputs.working-directory }}/gradle/**",
+              "${{ inputs.working-directory }}/buildSrc/**",
+              "${{ inputs.working-directory }}/${{ inputs.gradle-subproject }}/**"
             ]
           skip_after_successful_duplicate: true
 
@@ -379,10 +384,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: [setup, compile]
     if: |
-      success() && 
-      inputs.enable-openapi && 
-      needs.setup.outputs.publishable == 'true' && 
-      needs.setup.outputs.is-release != 'true' && 
+      success() &&
+      inputs.enable-openapi &&
+      needs.setup.outputs.publishable == 'true' &&
+      needs.setup.outputs.is-release != 'true' &&
       needs.setup.outputs.is-hotfix != 'true' &&
       inputs.s3-bucket-upload-openapi != '' &&
       inputs.s3-region-upload-openapi != '' &&
