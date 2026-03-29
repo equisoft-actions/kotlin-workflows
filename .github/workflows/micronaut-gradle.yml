@@ -332,7 +332,7 @@ jobs:
         uses: equisoft-actions/with-asdf-vm@v2
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v5
+        uses: gradle/actions/setup-gradle@v6
         with:
           cache-read-only: false
 
@@ -459,7 +459,7 @@ jobs:
         uses: equisoft-actions/with-asdf-vm@v2
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v5
+        uses: gradle/actions/setup-gradle@v6
 
       - name:  Run static check analysis
         shell: bash
@@ -645,7 +645,7 @@ jobs:
         if: needs.setup.outputs.micronaut-gradle-installed == 'true'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v5
+        uses: gradle/actions/setup-gradle@v6
 
       - name: Setup PHP
         uses: equisoft-actions/setup-php@v1
