@@ -793,7 +793,7 @@ jobs:
         uses: equisoft-actions/with-asdf-vm@v2
 
       - name: Setup PHP # TODO: Change the project setup to do that. Maybe put it into actions/with-asdf-vm?
-        uses: shivammathur/setup-php@accd6127cb78bee3e8082180cb391013d204ef9f # v2
+        uses: shivammathur/setup-php@7c071dfe9dc99bdf297fa79cb49ea005b9fcadbc # v2
         if: matrix.generator == 'php'
         with:
           php-version: "8.1"
