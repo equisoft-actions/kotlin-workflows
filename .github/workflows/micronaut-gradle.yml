@@ -332,10 +332,9 @@ jobs:
         uses: equisoft-actions/with-asdf-vm@v2
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@50e97c2cd7a37755bbfafc9c5b7cafaece252f6e #v6
+        uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5
         with:
           cache-read-only: false
-          cache-provider: basic
 
       - name: Compile source and test code
         shell: bash
@@ -460,11 +459,9 @@ jobs:
         uses: equisoft-actions/with-asdf-vm@v2
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@50e97c2cd7a37755bbfafc9c5b7cafaece252f6e #v6
-        with:
-          cache-provider: basic
+        uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5
 
-      - name: Run static check analysis
+      - name:  Run static check analysis
         shell: bash
         working-directory: ${{ inputs.working-directory }}
         run: |
@@ -648,9 +645,7 @@ jobs:
         if: needs.setup.outputs.micronaut-gradle-installed == 'true'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@50e97c2cd7a37755bbfafc9c5b7cafaece252f6e #v6
-        with:
-          cache-provider: basic
+        uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5
 
       - name: Setup PHP
         uses: equisoft-actions/setup-php@v1
@@ -792,7 +787,7 @@ jobs:
       - name: Setup asdf-vm
         uses: equisoft-actions/with-asdf-vm@v2
 
-      - name: Setup PHP # TODO: Change the project setup to do that. Maybe put it into actions/with-asdf-vm?
+      - name: Setup PHP  # TODO: Change the project setup to do that. Maybe put it into actions/with-asdf-vm?
         uses: shivammathur/setup-php@7c071dfe9dc99bdf297fa79cb49ea005b9fcadbc # v2
         if: matrix.generator == 'php'
         with:
