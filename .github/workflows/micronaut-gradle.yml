@@ -403,7 +403,7 @@ jobs:
           name: openapi-${{ needs.setup.outputs.openapi-file }}
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@d979d5b3a71173a29b74b5b88418bfda9437d885 # v6
+        uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59 # v6
         with:
           role-to-assume: ${{ inputs.s3-role-to-assume }}
           role-session-name: ${{ github.run_id }}-${{ inputs.name }}-openapi-upload
