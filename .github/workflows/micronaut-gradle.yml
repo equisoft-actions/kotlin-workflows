@@ -373,7 +373,7 @@ jobs:
           if-no-files-found: error
 
       - name: Upload openapi.yaml to release assets
-        uses: softprops/action-gh-release@718ea10b132b3b2eba29c1007bb80653f286566b # v3
+        uses: softprops/action-gh-release@3d0d9888cb7fd7b750713d6e236d1fcb99157228 # v3
         if: success() && inputs.enable-openapi && github.ref_type == 'tag' && needs.setup.outputs.is-release == 'true'
         with:
           files: |
@@ -403,7 +403,7 @@ jobs:
           name: openapi-${{ needs.setup.outputs.openapi-file }}
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@254c19bd240aabef8777f48595e9d2d7b972184b # v6
+        uses: aws-actions/configure-aws-credentials@517a711dbcd0e402f90c77e7e2f81e849156e31d # v6
         with:
           role-to-assume: ${{ inputs.s3-role-to-assume }}
           role-session-name: ${{ github.run_id }}-${{ inputs.name }}-openapi-upload
