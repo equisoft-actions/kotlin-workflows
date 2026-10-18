@@ -363,7 +363,7 @@ jobs:
           echo "normalized-openapi-file=${NORMALIZED_OPENAPI_FILE}" >> $GITHUB_OUTPUT
 
       - name: Upload OpenAPI spec
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         if: success() && inputs.enable-openapi
         with:
           name: ${{ steps.normalize-openapi-filename.outputs.normalized-openapi-file }}
@@ -398,7 +398,7 @@ jobs:
 
     steps:
       - name: Download OpenAPI artifact
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
           name: openapi-${{ needs.setup.outputs.openapi-file }}
 
@@ -471,7 +471,7 @@ jobs:
             -Pgpr.key=${{ secrets.GPR_KEY }}
 
       - name: Upload results
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         if: success() || failure()
         with:
           name: static-check-reports
@@ -708,7 +708,7 @@ jobs:
           echo "filename=$filename" >> $GITHUB_OUTPUT
 
       - name: Upload lambda artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         if: inputs.lambda-build
         with:
           name: ${{ steps.extract-lambda.outputs.filename }}
@@ -788,7 +788,7 @@ jobs:
         uses: equisoft-actions/with-asdf-vm@v2
 
       - name: Setup PHP  # TODO: Change the project setup to do that. Maybe put it into actions/with-asdf-vm?
-        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # v2
         if: matrix.generator == 'php'
         with:
           php-version: "8.1"
