@@ -25,6 +25,17 @@ on:
         default: '.'
         required: false
         type: string
+      artifact-prefix:
+        description: |
+          Prefix added to uploaded artifact names. Useful to avoid name collisions when running this workflow in a matrix.
+        required: false
+        default: ""
+        type: string
+      gradle-subproject:
+        description: "Gradle subproject path relative to working-directory"
+        default: '.'
+        required: false
+        type: string
       enable-test-coverage-comment:
         description: Post coverage results as a comment on the Pull Request. Defaults to `true`.
         required: false
@@ -109,7 +120,7 @@ jobs:
         run: |
           BASE_NAME=${{ inputs.name }}
           FULL_NAME=$BASE_NAME
-          SUBPROJECT_DIR=${{ inputs.working-directory }}
+          SUBPROJECT_DIR=${{ inputs.working-directory }}/${{ inputs.gradle-subproject }}
           VERSION=${{ steps.metadata.outputs.version }}
 
           MICRONAUT_GRADLE_INSTALLED=$(grep -s -q 'id("io.micronaut.application")\|id("com.equisoft.standards.micronaut")\|id = "com.equisoft.standards.micronaut"' "$SUBPROJECT_DIR/build.gradle.kts" "${{ inputs.working-directory }}/gradle/libs.versions.toml" 2>&1; echo $?)
@@ -140,7 +151,7 @@ jobs:
         shell: bash
         working-directory: ${{ inputs.working-directory }}
         run: |
-          ./gradlew ci-classes \
+          ./gradlew -p ${{ inputs.gradle-subproject }} ci-classes \
             -Papplication.version=${{ needs.setup.outputs.version }} \
             -Pgpr.user=${{ secrets.GPR_USER }} \
             -Pgpr.key=${{ secrets.GPR_KEY }}
@@ -150,7 +161,7 @@ jobs:
         shell: bash
         working-directory: ${{ inputs.working-directory }}
         run: |
-          ./gradlew ci-check \
+          ./gradlew -p ${{ inputs.gradle-subproject }} ci-check \
             -Papplication.version=${{ needs.setup.outputs.version }} \
             -Pgpr.user=${{ secrets.GPR_USER }} \
             -Pgpr.key=${{ secrets.GPR_KEY }}
@@ -159,7 +170,7 @@ jobs:
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         if: success() || failure()
         with:
-          name: static-check-reports
+          name: ${{ inputs.artifact-prefix }}static-check-reports
           path: |
             ${{ inputs.working-directory }}/**/build/reports/detekt
             ${{ inputs.working-directory }}/**/build/reports/ktlint
@@ -170,6 +181,7 @@ jobs:
         if: contains(inputs.checks, 'unit_tests')
         with:
           working-directory: ${{ inputs.working-directory }}
+          gradle-project-path: ${{ inputs.gradle-subproject }}
           task-name: unit-tests
           gradle-properties: |
             application.version=${{ needs.setup.outputs.version }}
@@ -181,6 +193,7 @@ jobs:
         if: contains(inputs.checks, 'e2e_tests')
         with:
           working-directory: ${{ inputs.working-directory }}
+          gradle-project-path: ${{ inputs.gradle-subproject }}
           task-name: e2e-tests
           gradle-properties: |
             application.version=${{ needs.setup.outputs.version }}
@@ -192,6 +205,7 @@ jobs:
         if: (contains(inputs.checks, 'unit_tests') || contains(inputs.checks, 'e2e_tests'))
         with:
           working-directory: ${{ inputs.working-directory }}
+          gradle-project-path: ${{ inputs.gradle-subproject }}
           gradle-properties: |
             application.version=${{ needs.setup.outputs.version }}
             gpr.user=${{ secrets.GPR_USER }}
@@ -218,7 +232,7 @@ jobs:
         shell: bash
         working-directory: ${{ inputs.working-directory }}
         run: |
-          ./gradlew publish \
+          ./gradlew -p ${{ inputs.gradle-subproject }} publish \
             -Papplication.version=${{ needs.setup.outputs.version }} \
             -Pgpr.user=${{ secrets.GPR_USER }} \
             -Pgpr.key=${{ secrets.GPR_KEY }} \
